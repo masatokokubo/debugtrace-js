@@ -1,5 +1,5 @@
 // ReadmeExample.ts
-import debugtrace from '../debugtrace.js'
+import debugtrace from 'debugtrace-js'
 
 class Contact {
   constructor(

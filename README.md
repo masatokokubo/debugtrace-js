@@ -14,13 +14,14 @@ debugtrace-js is a library that outputs trace logs when debugging JavaScript pro
 
 Do the following for debug target and related methods.
 
-* Run `npm debugtrace-js` in the project's root directory.
+* Run `npm debugtrace-js` in the project's root directory for non-browser environments.
 * Perform the following steps for the target function(s) and related functions:
 
 1. Insert the appropriate import/script tag near the top of the target file:
   * `const debugtrace = require('debugtrace-js')` - `Node.js`
   * `import debugtrace from 'debugtrace-js'` - `Bun (TypeScript)`
-  * `<script src="path/to/debugtrace.js"></script>` - `HTML`
+  * `<script src="https://cdn.jsdelivr.net/npm/debugtrace-js@3.0.0/debugtrace.min.js"></script>` - `HTML`
+
 2. Insert `debugtrace.enter()` at the beginning of the function.
 3. Insert `debugtrace.leave()` at the end of the function (or immediately before the `return` statement).
 4. As needed, insert `debugtrace.print('foo', foo)` to log arguments, local variables, or return values.
@@ -29,7 +30,7 @@ The following is an example of JavaScript source used debugtrace-js methods and 
 
 ```JavaScript:ReadmeExample.js
 // ReadmeExample.js
-const debugtrace = require('../debugtrace.js') // TODO: Debug
+const debugtrace = require('debugtrace-js') // TODO: Debug
 
 class Contact {
   constructor(id, firstName, lastName, birthday) {
@@ -85,7 +86,7 @@ The following is an example of TyprScript source used debugtrace-js methods and 
 
 ```JavaScript:ReadmeExample.ts
 // ReadmeExample.ts
-import debugtrace from '../debugtrace.js'
+import debugtrace from 'debugtrace-js'
 
 class Contact {
   constructor(
@@ -147,7 +148,7 @@ The following is an HTML used debugtrace-js methods and the log of when it has b
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>HTML Example</title>
-    <script src="../debugtrace.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/debugtrace-js@3.0.0/debugtrace.min.js"></script>
     <script>
       class Contact {
         constructor(id, firstName, lastName, birthday) {

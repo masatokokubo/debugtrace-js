@@ -1,5 +1,5 @@
 // ES2019Example.js
-const debugtrace = require('../debugtrace.js')
+const debugtrace = require('debugtrace-js')
 
 const str = '   AAA   BBB   '
 

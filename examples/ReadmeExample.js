@@ -1,5 +1,5 @@
 // ReadmeExample.js
-const debugtrace = require('../debugtrace.js') // TODO: Debug
+const debugtrace = require('debugtrace-js') // TODO: Debug
 
 class Contact {
   constructor(id, firstName, lastName, birthday) {

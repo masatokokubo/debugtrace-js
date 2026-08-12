@@ -12,13 +12,13 @@ debugtrace-js は、JavaScriptプログラムのデバッグ時にトレース�
 
 ### 2. 使用方法
 
-* プロジェクトのルートディレクトリで`npm debugtrace-js`を実施。
+* プロジェクトのルートディレクトリで`npm debugtrace-js`を実施。(非ブラウザ環境の場合)
 * デバッグ対象および関連する関数に対して以下を行う。
 
-1. デバッグ対象のファイルの先頭付近に以下をを挿入する。
+1. デバッグ対象のファイルに以下を挿入する。
    * `const debugtrace = require('debugtrace-js')`  - `Node.js`
    * `import debugtrace from 'debugtrace-js'` - `Bun (Typescript)`
-   * `<script src="パス/debugtrace.js"></script>` - `HTML`
+   * `<script src="https://cdn.jsdelivr.net/npm/debugtrace-js@3.0.0/debugtrace.min.js"></script>` - `HTML`
 2. 関数の先頭に`debugtrace.enter()`を挿入する。
 3. 関数の終了(または`return`文の直前)に`debugtrace.leave()`を挿入する。
 4. 必要に応じて、引数、ローカル変数、戻り値をログに出力する`debugtrace.print('foo', foo)`を挿入する。
@@ -27,7 +27,7 @@ debugtrace-js は、JavaScriptプログラムのデバッグ時にトレース�
 
 ```JavaScript:ReadmeExample.js
 // ReadmeExample.js
-const debugtrace = require('../debugtrace.js') // TODO: Debug
+const debugtrace = require('debugtrace-js') // TODO: Debug
 
 class Contact {
   constructor(id, firstName, lastName, birthday) {
@@ -83,7 +83,7 @@ node examples/ReadmeExample.js
 
 ```JavaScript:ReadmeExample.ts
 // ReadmeExample.ts
-import debugtrace from '../debugtrace.js'
+import debugtrace from 'debugtrace-js'
 
 class Contact {
   constructor(
@@ -145,7 +145,7 @@ bun examples/ReadmeExample.ts
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>HTML Example</title>
-    <script src="../debugtrace.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/debugtrace-js@3.0.0/debugtrace.min.js"></script>
     <script>
       class Contact {
         constructor(id, firstName, lastName, birthday) {

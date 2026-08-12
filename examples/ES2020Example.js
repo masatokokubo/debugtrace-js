@@ -1,5 +1,5 @@
 // ES2020Example.js
-const debugtrace = require('../debugtrace.js')
+const debugtrace = require('debugtrace-js')
 
 const bigInt1 = 100000001n
 debugtrace.print('bigInt1', bigInt1)
