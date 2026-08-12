@@ -3,9 +3,84 @@
  * @copyright 2015 Masato Kokubo
  * @license MIT
  */
-"use strict"
+"use strict";
 
-const LogBuffer = require('./logbuffer')
+(function(root, factory) {
+  const debugtrace = factory(root)
+
+  if (typeof module === 'object' && module.exports) {
+    module.exports = debugtrace
+  }
+
+  if (root) {
+    root.debugtrace = debugtrace
+  }
+}(typeof globalThis !== 'undefined' ? globalThis : this, function(root) {
+class LogBuffer {
+  constructor(maximumDataOutputWidth) {
+    this._maximumDataOutputWidth = maximumDataOutputWidth
+    this._nestLevel = 0
+    this._appendNestLevel = 0
+    this._lines = []
+    this._lastLine = ''
+  }
+
+  lineFeed() {
+    this._lines.push([this._nestLevel + this._appendNestLevel, this._lastLine.replace(/ +$/, '')])
+    this._appendNestLevel = 0
+    this._lastLine = ''
+  }
+
+  upNest() {
+    ++this._nestLevel
+  }
+
+  downNest() {
+    --this._nestLevel
+  }
+
+  append(value, nestLevel = 0, noBreak = false) {
+    const str = value.toString()
+    if (!noBreak && this.length > 0 && this.length + str.length > this._maximumDataOutputWidth)
+      this.lineFeed()
+    this._appendNestLevel = nestLevel
+    this._lastLine += str
+    return this
+  }
+
+  noBreakAppend(value) {
+    return this.append(value, 0, true)
+  }
+
+  appendBuffer(separator, buff) {
+    if (separator != null)
+      this.append(separator, 0, true)
+    let index = 0
+    for (const line of buff.lines) {
+      if (index > 0)
+        this.lineFeed()
+      this.append(line[1], line[0], index == 0 && separator != null)
+      ++index
+    }
+    return this
+  }
+
+  get length() {
+    return this._lastLine.length
+  }
+
+  get isMultiLines() {
+    return this._lines.length > 1 || this._lines.length == 1 && this.length > 0
+  }
+
+  get lines() {
+    let lines = []
+    lines.push(...this._lines)
+    if (this.length > 0)
+      lines.push([this._nestLevel, this._lastLine])
+    return lines
+  }
+}
 
 /** @private */
 let nestLevel     = 0 // Nest Level
@@ -21,7 +96,7 @@ const dataIndentStrings = []
 const enterTimes = []
 
 // version
-const version = '2.2.0'
+const version = '3.0.0'
 
 // Reflected object array
 let reflectedObjects = []
@@ -87,20 +162,21 @@ const downNest = () => {
  * @return a caller stack trace element
  */
 const getCallerInfo = () => {
-  const myModuleName = 'debugtrace\.js$'
+  const myModuleName = /debugtrace\.js$/
 
-  const callerInfos = new Error('').stack.split('\n')
-    .filter(line => line.indexOf('at ') >= 0)
+  const stack = new Error('').stack
+  const callerInfos = (typeof stack == 'string' ? stack.split('\n') : [])
     .map(line => {
-      const parts = line.substring(line.indexOf('at ') + 3).split(' ')
-      if (parts.length == 1)
-        parts.unshift('')
-      if (parts[1].indexOf('(') == 0)
-        parts[1] = parts[1].slice(1, -1)
+      // V8/Node: "at functionName (file:line:column)"
+      // Firefox:  "functionName@file:line:column"
+      const v8Match = line.match(/^\s*at\s+(?:(.*?)\s+\()?(.+?):(\d+):(\d+)\)?\s*$/)
+      const firefoxMatch = line.match(/^(.*?)@(.+?):(\d+):(\d+)\s*$/)
+      const match = v8Match || firefoxMatch
+      if (!match)
+        return undefined
 
-      const parts2 = parts[1].split(':')
-      const functionName = parts[0]
-      let fileName = parts2.length <= 3 ? parts2[0] : parts2[0] + ':' + parts2[1]
+      const functionName = match[1] || ''
+      let fileName = match[2]
       let delimIndex = fileName.lastIndexOf('/')
       if (delimIndex >= 0)
         fileName = fileName.substring(delimIndex + 1)
@@ -109,25 +185,28 @@ const getCallerInfo = () => {
         if (delimIndex >= 0)
           fileName = fileName.substring(delimIndex + 1)
       }
-      const lineNumber = parts2[parts2.length - 2]
-      const columnNumber = parts2[parts2.length - 1]
       return {
         functionName : functionName,
         fileName: fileName,
-        lineNumber: lineNumber,
-        columnNumber: columnNumber
+        lineNumber: match[3],
+        columnNumber: match[4]
       }
     })
-    .filter(element => !element.fileName.match(myModuleName))
+    .filter(element => element && !myModuleName.test(element.fileName))
 
-  return callerInfos[0]
+  return callerInfos[0] || {
+    functionName: '',
+    fileName: '',
+    lineNumber: '',
+    columnNumber: ''
+  }
 }
 
 /**
  * Returns the type name of the value.
  * @private
  * @param {string} message the message to output
- * @param {boolean} withCallerInfo - true if outputs the caller infomation, false otherwise
+ * @param {boolean} withCallerInfo - true if outputs the caller information, false otherwise
  */
 const getTypeName = (value, printOptions) => {
   let typeName = ''
@@ -164,11 +243,72 @@ const getTypeName = (value, printOptions) => {
  * Outputs the log.
  * @private
  * @param {string} message the message to output
+ * @return {string} the browser name and version
+ */
+const getEnvironment = () => {
+  if (typeof globalThis.Deno !== 'undefined' && globalThis.Deno?.version?.deno)
+    return `Deno ${globalThis.Deno.version.deno}`
+
+  if (typeof globalThis.Bun !== 'undefined' && globalThis.Bun?.version)
+    return `Bun ${globalThis.Bun.version}`
+
+  if (typeof globalThis.process !== 'undefined' && globalThis.process?.versions?.electron)
+    return `Electron ${globalThis.process.versions.electron} (Node.js ${globalThis.process.versions.node})`
+
+  if (typeof globalThis.process !== 'undefined' && globalThis.process?.versions?.nw)
+    return `NW.js ${globalThis.process.versions.nw} (Node.js ${globalThis.process.versions.node})`
+
+  if (typeof globalThis.process !== 'undefined' && globalThis.process?.versions?.node)
+    return `Node.js ${globalThis.process.versions.node}`
+
+  if (typeof globalThis.navigator !== 'undefined' && globalThis.navigator?.userAgent) {
+    // Browser
+    const userAgent = globalThis.navigator.userAgent
+    let match;
+
+    match = userAgent.match(/Edg(?:A|iOS)?\/([\d.]+)/)
+    if (match) return `Microsoft Edge ${match[1]}`
+
+    match = userAgent.match(/OPR\/([\d.]+)/)
+    if (match) return `Opera ${match[1]}`
+
+    match = userAgent.match(/Vivaldi\/([\d.]+)/)
+    if (match) return `Vivaldi ${match[1]}`
+
+    match = userAgent.match(/SamsungBrowser\/([\d.]+)/)
+    if (match) return `Samsung Internet ${match[1]}`
+
+    match = userAgent.match(/FxiOS\/([\d.]+)/)
+    if (match) return `Firefox ${match[1]}`
+
+    match = userAgent.match(/Firefox\/([\d.]+)/)
+    if (match) return `Firefox ${match[1]}`
+
+    match = userAgent.match(/CriOS\/([\d.]+)/)
+    if (match) return `Chrome ${match[1]}`
+
+    match = userAgent.match(/Chrome\/([\d.]+)/)
+    if (match) return `Chrome ${match[1]}`
+
+    match = userAgent.match(/Chromium\/([\d.]+)/)
+    if (match) return `Chromium ${match[1]}`
+
+    match = userAgent.match(/Version\/([\d.]+).*Safari/)
+    if (match) return `Safari ${match[1]}`
+  }
+
+  return 'Unknown';
+}
+
+/**
+ * Outputs the log.
+ * @private
+ * @param {string} message the message to output
  */
 const printSub = message => {
   if (!initialized) {
     initialized = true
-    printSub('debugtrace-js ' + version + ' on Node.js ' + process.versions.node)
+    printSub('debugtrace-js ' + version + ' on ' + getEnvironment())
     printSub('')
   }
 
@@ -472,7 +612,7 @@ const debugtrace = {}
 /**
  * @namespace debugtrace
  */
-module.exports = (function() {
+const debugtraceApi = (function() {
   /**
    * Formatting function of log output when entering methods.
    * @type {function}
@@ -518,7 +658,7 @@ module.exports = (function() {
    * String to be output instead of not outputting value.
    * @type {string}
    */
-  debugtrace.nonOutputString = '***' // Dose not use
+  debugtrace.nonOutputString = '***' // Does not use
 
   /**
    * String to represent that the cyclic reference occurs.
@@ -649,7 +789,9 @@ module.exports = (function() {
    * @type {function}
    * @since 2.1.0
    */
-  debugtrace.basicPrint = console.log
+  debugtrace.basicPrint = (typeof console !== 'undefined' && console.log)
+    ? console.log.bind(console)
+    : () => {}
 
   /**
    * Outputs a log when entering function.
@@ -670,7 +812,7 @@ module.exports = (function() {
   }
 
   /**
-   * Outputs a log when leavign function.
+   * Outputs a log when leaving function.
    */
   debugtrace.leave = () => {
     const now = Date.now()
@@ -721,7 +863,7 @@ module.exports = (function() {
    * @return {*} the value
    */
   debugtrace.print = (name, value, printOptions) => {
-    printOptions ??= new Object()
+    printOptions ??= {}
     printOptions.stringLength ??= false
     printOptions.arrayLength ??= false
     printOptions.size ??= false
@@ -754,5 +896,8 @@ module.exports = (function() {
     return value
   }
 
-  return debugtrace
-}())
+    return debugtrace
+})()
+
+return debugtraceApi
+}))

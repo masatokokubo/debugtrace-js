@@ -2,8 +2,7 @@
 
 [Japanese](README_ja.md)
 
-*debugtrace-js* is a library that outputs trace logs when debugging JavaScript programs. It is available on Node.js 16 or later.<br>
-By embedding `debugtrace.enter()` and `debugtrace.leave()` at the start and end of functions, you can output the execution status of the JavaScript program under development to the log.
+debugtrace-js is a library that outputs trace logs when debugging JavaScript programs; it can be used in Node.js, Bun, and Deno, as well as in browsers such as Chrome, Edge, Firefox, and Safari.
 
 ### 1. Features
 
@@ -15,15 +14,22 @@ By embedding `debugtrace.enter()` and `debugtrace.leave()` at the start and end 
 
 Do the following for debug target and related methods.
 
-1. Insert `debugtrace.enter()` at the beginning of functions.
-1. Insert `debugtrace.leave()` at the end of functions or just before the `return` statement.
-1. Insert `debugtrace.print('foo', foo)` to output arguments, local variables and return value to the log if necessary.
+* Run `npm debugtrace-js` in the project's root directory.
+* Perform the following steps for the target function(s) and related functions:
+
+1. Insert the appropriate import/script tag near the top of the target file:
+  * `const debugtrace = require('debugtrace-js')` - `Node.js`
+  * `import debugtrace from 'debugtrace-js'` - `Bun (TypeScript)`
+  * `<script src="path/to/debugtrace.js"></script>` - `HTML`
+2. Insert `debugtrace.enter()` at the beginning of the function.
+3. Insert `debugtrace.leave()` at the end of the function (or immediately before the `return` statement).
+4. As needed, insert `debugtrace.print('foo', foo)` to log arguments, local variables, or return values.
 
 The following is an example of JavaScript source used debugtrace-js methods and the log of when it has been executed.
 
 ```JavaScript:ReadmeExample.js
 // ReadmeExample.js
-const debugtrace = require('debugtrace-js') // TODO: Debug
+const debugtrace = require('../debugtrace.js') // TODO: Debug
 
 class Contact {
   constructor(id, firstName, lastName, birthday) {
@@ -34,7 +40,16 @@ class Contact {
   }
 }
 
-const func2 = () => {
+func1()
+
+function func1() {
+  debugtrace.enter() // TODO: Debug
+  debugtrace.printMessage('Hello, World!') // TODO: Debug
+  func2()
+  debugtrace.leave() // TODO: Debug
+}
+
+function func2() {
   debugtrace.enter() // TODO: Debug
   let contacts = [
     new Contact(1, 'Akane' , 'Apple', new Date(Date.UTC(1991, 2, 3))),
@@ -43,35 +58,148 @@ const func2 = () => {
   debugtrace.print('contacts', contacts) // TODO: Debug
   debugtrace.leave() // TODO: Debug
 }
+```
 
-const func1 = () => {
+```log
+node examples/ReadmeExample.js
+2026-08-12 07:40:42.091+09:00 debugtrace-js 3.0.0 on Node.js 22.23.1
+2026-08-12 07:40:42.104+09:00 
+2026-08-12 07:40:42.104+09:00 Enter func1 (ReadmeExample.js:16)
+2026-08-12 07:40:42.104+09:00 | Hello, World! (ReadmeExample.js:17)
+2026-08-12 07:40:42.104+09:00 | Enter func2 (ReadmeExample.js:23)
+2026-08-12 07:40:42.106+09:00 | | contacts = [
+2026-08-12 07:40:42.106+09:00 | |   (Contact){
+2026-08-12 07:40:42.106+09:00 | |     id: 1, firstName: 'Akane', lastName: 'Apple',
+2026-08-12 07:40:42.106+09:00 | |     birthday: 1991-03-03 09:00:00.000+09:00
+2026-08-12 07:40:42.106+09:00 | |   },
+2026-08-12 07:40:42.106+09:00 | |   (Contact){
+2026-08-12 07:40:42.106+09:00 | |     id: 2, firstName: 'Yukari', lastName: 'Apple',
+2026-08-12 07:40:42.106+09:00 | |     birthday: 1992-04-04 09:00:00.000+09:00
+2026-08-12 07:40:42.107+09:00 | |   }
+2026-08-12 07:40:42.107+09:00 | | ] (ReadmeExample.js:28)
+2026-08-12 07:40:42.107+09:00 | Leave func2 (ReadmeExample.js:29) duration: 00:00:00.003
+2026-08-12 07:40:42.107+09:00 Leave func1 (ReadmeExample.js:19) duration: 00:00:00.003
+```
+
+The following is an example of TyprScript source used debugtrace-js methods and the log of when it has been executed.
+
+```JavaScript:ReadmeExample.ts
+// ReadmeExample.ts
+import debugtrace from '../debugtrace.js'
+
+class Contact {
+  constructor(
+    public id: number,
+    public firstName: string,
+    public lastName: string,
+    public birthday: Date
+  ) {}
+}
+
+func1()
+
+function func1(): void {
   debugtrace.enter() // TODO: Debug
-  debugtrace.printMessage('Hello, World!')
+  debugtrace.printMessage('Hello, World!') // TODO: Debug
   func2()
   debugtrace.leave() // TODO: Debug
 }
 
-func1()
+function func2(): void {
+  debugtrace.enter() // TODO: Debug
+  const contacts: Contact[] = [
+    new Contact(1, 'Akane', 'Apple', new Date(Date.UTC(1991, 2, 3))),
+    new Contact(2, 'Yukari', 'Apple', new Date(Date.UTC(1992, 3, 4)))
+  ]
+  debugtrace.print('contacts', contacts) // TODO: Debug
+  debugtrace.leave() // TODO: Debug
+}
 ```
 
-```log:debugtrace.log
-2025-02-11 15:49:38.591+09:00 debugtrace-js 2.2.0 on Node.js 22.13.1
-2025-02-11 15:49:38.617+09:00
-2025-02-11 15:49:38.618+09:00 Enter func1 (ReadmeExample.js:25)
-2025-02-11 15:49:38.618+09:00 | Hello, World! (ReadmeExample.js:26)
-2025-02-11 15:49:38.618+09:00 | Enter func2 (ReadmeExample.js:15)
-2025-02-11 15:49:38.620+09:00 | | contacts = [
-2025-02-11 15:49:38.620+09:00 | |   (Contact){
-2025-02-11 15:49:38.620+09:00 | |     id: 1, firstName: 'Akane', lastName: 'Apple',
-2025-02-11 15:49:38.620+09:00 | |     birthday: 1991-03-03 09:00:00.000+09:00
-2025-02-11 15:49:38.621+09:00 | |   },
-2025-02-11 15:49:38.621+09:00 | |   (Contact){
-2025-02-11 15:49:38.621+09:00 | |     id: 2, firstName: 'Yukari', lastName: 'Apple',
-2025-02-11 15:49:38.621+09:00 | |     birthday: 1992-04-04 09:00:00.000+09:00
-2025-02-11 15:49:38.622+09:00 | |   }
-2025-02-11 15:49:38.622+09:00 | | ] (ReadmeExample.js:20)
-2025-02-11 15:49:38.622+09:00 | Leave func2 (ReadmeExample.js:21) duration: 00:00:00.004
-2025-02-11 15:49:38.622+09:00 Leave func1 (ReadmeExample.js:28) duration: 00:00:00.004
+```log
+bun examples/ReadmeExample.ts
+2026-08-12 07:40:47.180+09:00 debugtrace-js 3.0.0 on Bun 1.3.14
+2026-08-12 07:40:47.180+09:00 
+2026-08-12 07:40:47.180+09:00 Enter func1 (ReadmeExample.ts:16)
+2026-08-12 07:40:47.180+09:00 | Hello, World! (ReadmeExample.ts:17)
+2026-08-12 07:40:47.180+09:00 | Enter func2 (ReadmeExample.ts:23)
+2026-08-12 07:40:47.183+09:00 | | contacts = [
+2026-08-12 07:40:47.183+09:00 | |   (Contact){
+2026-08-12 07:40:47.183+09:00 | |     id: 1, firstName: 'Akane', lastName: 'Apple',
+2026-08-12 07:40:47.183+09:00 | |     birthday: 1991-03-03 09:00:00.000+09:00
+2026-08-12 07:40:47.183+09:00 | |   },
+2026-08-12 07:40:47.183+09:00 | |   (Contact){
+2026-08-12 07:40:47.183+09:00 | |     id: 2, firstName: 'Yukari', lastName: 'Apple',
+2026-08-12 07:40:47.183+09:00 | |     birthday: 1992-04-04 09:00:00.000+09:00
+2026-08-12 07:40:47.183+09:00 | |   }
+2026-08-12 07:40:47.183+09:00 | | ] (ReadmeExample.ts:28)
+2026-08-12 07:40:47.183+09:00 | Leave func2 (ReadmeExample.ts:29) duration: 00:00:00.003
+2026-08-12 07:40:47.184+09:00 Leave func1 (ReadmeExample.ts:19) duration: 00:00:00.003
+```
+
+The following is an HTML used debugtrace-js methods and the log of when it has been executed.
+
+```html
+<!-- ReadmeExample.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>HTML Example</title>
+    <script src="../debugtrace.js"></script>
+    <script>
+      class Contact {
+        constructor(id, firstName, lastName, birthday) {
+          this.id = id
+          this.firstName = firstName
+          this.lastName = lastName
+          this.birthday = birthday
+        }
+      }
+
+      function func1() {
+        debugtrace.enter()
+        debugtrace.printMessage('Hello, World!')
+        func2()
+        debugtrace.leave()
+      }
+
+      function func2() {
+        debugtrace.enter()
+        let contacts = [
+          new Contact(1, 'Akane' , 'Apple', new Date(Date.UTC(1991, 2, 3))),
+          new Contact(2, 'Yukari', 'Apple', new Date(Date.UTC(1992, 3, 4)))
+        ]
+        debugtrace.print('contacts', contacts)
+        debugtrace.leave()
+      }
+    </script>
+  </head>
+  <body>
+    <button onclick="func1()">Click me</button>
+  </body>
+</html>
+```
+
+```log
+2026-08-12 07:41:07.790+09:00 debugtrace-js 3.0.0 on Firefox 140.0
+2026-08-12 07:41:07.791+09:00
+2026-08-12 07:41:07.791+09:00 Enter func1 (ReadmeExample.html:20)
+2026-08-12 07:41:07.791+09:00 | Hello, World! (ReadmeExample.html:21)
+2026-08-12 07:41:07.791+09:00 | Enter func2 (ReadmeExample.html:27)
+2026-08-12 07:41:07.792+09:00 | | contacts = [
+2026-08-12 07:41:07.792+09:00 | |   (Contact){
+2026-08-12 07:41:07.792+09:00 | |     id: 1, firstName: 'Akane', lastName: 'Apple',
+2026-08-12 07:41:07.792+09:00 | |     birthday: 1991-03-03 09:00:00.000+09:00
+2026-08-12 07:41:07.792+09:00 | |   },
+2026-08-12 07:41:07.793+09:00 | |   (Contact){
+2026-08-12 07:41:07.793+09:00 | |     id: 2, firstName: 'Yukari', lastName: 'Apple',
+2026-08-12 07:41:07.793+09:00 | |     birthday: 1992-04-04 09:00:00.000+09:00
+2026-08-12 07:41:07.793+09:00 | |   }
+2026-08-12 07:41:07.793+09:00 | | ] (ReadmeExample.html:32)
+2026-08-12 07:41:07.793+09:00 | Leave func2 (ReadmeExample.html:33) duration: 00:00:00.002
+2026-08-12 07:41:07.793+09:00 Leave func1 (ReadmeExample.html:23) duration: 00:00:00.002
 ```
 
 ### 3. Function List
@@ -353,44 +481,12 @@ The following properties can be specified for on debugtrace-js.
   </tr>
 </table>
 
-### 5. License
+### 5. CHANGELOG
+
+[CHANGELOG](CHANGELOG.md)
+
+### 6. License
 
 [MIT ライセンス(MIT)](LICENSE.txt)
 
-_(C) 2015 Masato Kokubo_
-
-### 6. Release Notes
-
-#### debugtrace-js 2.2.0 - February 16, 2025
-
-* The following properties have been deleted.
-  * `debugtrace.minimumOutputLengthAndSize`
-  * `debugtrace.minimumOutputStringLength`
-
-* The default values ​​of the following properties have been changed.
-  |Property name               |Default value|Old default value|
-  |:---------------------------|------------:|----------------:|
-  |`debugtrace.collectionLimit`|          128|              512|
-  |`debugtrace.stringLimit`    |          256|             8192|
-
-* The `printOptions` argument (optional) has been added to the `print` function.
- 
-#### debugtrace-js 2.1.2 - March 13, 2022
-
-* The `print` and `printMessage` functions now return the argument value.
-
-#### debugtrace-js 2.1.1 - October 9, 2021
-
-* Fixed a bug that an exception is thrown when outputting a type name.
-* Changed to output Node.js version at startup.
-
-#### debugtrace-js 2.1.0 - August 9, 2021
-
-* Improved function output (output only the first line of the function definition)
-* Added the `basicPrint` function
-* Improved the line break handling of data output
-
-#### debugtrace-js 2.0.0 - August 2, 2020
-
-* Supported Node.js 10 or later
-* Improved the line break handling of data output
+*&copy; 2015 Masato Kokubo*

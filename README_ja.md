@@ -2,8 +2,7 @@
 
 [English](README.md)
 
-*debugtrace-js* は、JavaScriptプログラムのデバッグ時にトレースログを出力するライブラリで、Node.js 16以降で利用できます。  
-関数の開始と終了箇所に`debugtrace.enter()`および`debugtrace.leave()`を埋め込む事で、開発中のJavaScriptプログラムの実行状況をログに出力する事ができます。
+debugtrace-js は、JavaScriptプログラムのデバッグ時にトレースログを出力するライブラリで、Node.js, Bun, DenoおよびChrome, Edge, Firefox, Safariなどのブラウザで利用できます。
 
 ### 1. 特徴
 
@@ -13,17 +12,22 @@
 
 ### 2. 使用方法
 
-デバッグ対象および関連する関数に対して以下を行います。
+* プロジェクトのルートディレクトリで`npm debugtrace-js`を実施。
+* デバッグ対象および関連する関数に対して以下を行う。
 
-1. 関数の先頭に`debugtrace.enter()`を挿入する。
-1. 関数の終了(または`return`文の直前)に`debugtrace.leave()`を挿入する。
-1. 必要に応じて、引数、ローカル変数、戻り値をログに出力する`debugtrace.print('foo', foo)`を挿入する。
+1. デバッグ対象のファイルの先頭付近に以下をを挿入する。
+   * `const debugtrace = require('debugtrace-js')`  - `Node.js`
+   * `import debugtrace from 'debugtrace-js'` - `Bun (Typescript)`
+   * `<script src="パス/debugtrace.js"></script>` - `HTML`
+2. 関数の先頭に`debugtrace.enter()`を挿入する。
+3. 関数の終了(または`return`文の直前)に`debugtrace.leave()`を挿入する。
+4. 必要に応じて、引数、ローカル変数、戻り値をログに出力する`debugtrace.print('foo', foo)`を挿入する。
 
-以下は、debugtraceの関数を使用したJavaScriptの例とそれを実行した際のログです。
+以下は、debugtrace-jsのメソッドを使用したJavaScriptソースコードの例と、その実行時のログです。
 
 ```JavaScript:ReadmeExample.js
 // ReadmeExample.js
-const debugtrace = require('debugtrace-js') // TODO: Debug
+const debugtrace = require('../debugtrace.js') // TODO: Debug
 
 class Contact {
   constructor(id, firstName, lastName, birthday) {
@@ -34,7 +38,16 @@ class Contact {
   }
 }
 
-const func2 = () => {
+func1()
+
+function func1() {
+  debugtrace.enter() // TODO: Debug
+  debugtrace.printMessage('Hello, World!') // TODO: Debug
+  func2()
+  debugtrace.leave() // TODO: Debug
+}
+
+function func2() {
   debugtrace.enter() // TODO: Debug
   let contacts = [
     new Contact(1, 'Akane' , 'Apple', new Date(Date.UTC(1991, 2, 3))),
@@ -43,35 +56,148 @@ const func2 = () => {
   debugtrace.print('contacts', contacts) // TODO: Debug
   debugtrace.leave() // TODO: Debug
 }
+```
 
-const func1 = () => {
+```log
+node examples/ReadmeExample.js
+2026-08-12 07:40:42.091+09:00 debugtrace-js 3.0.0 on Node.js 22.23.1
+2026-08-12 07:40:42.104+09:00 
+2026-08-12 07:40:42.104+09:00 Enter func1 (ReadmeExample.js:16)
+2026-08-12 07:40:42.104+09:00 | Hello, World! (ReadmeExample.js:17)
+2026-08-12 07:40:42.104+09:00 | Enter func2 (ReadmeExample.js:23)
+2026-08-12 07:40:42.106+09:00 | | contacts = [
+2026-08-12 07:40:42.106+09:00 | |   (Contact){
+2026-08-12 07:40:42.106+09:00 | |     id: 1, firstName: 'Akane', lastName: 'Apple',
+2026-08-12 07:40:42.106+09:00 | |     birthday: 1991-03-03 09:00:00.000+09:00
+2026-08-12 07:40:42.106+09:00 | |   },
+2026-08-12 07:40:42.106+09:00 | |   (Contact){
+2026-08-12 07:40:42.106+09:00 | |     id: 2, firstName: 'Yukari', lastName: 'Apple',
+2026-08-12 07:40:42.106+09:00 | |     birthday: 1992-04-04 09:00:00.000+09:00
+2026-08-12 07:40:42.107+09:00 | |   }
+2026-08-12 07:40:42.107+09:00 | | ] (ReadmeExample.js:28)
+2026-08-12 07:40:42.107+09:00 | Leave func2 (ReadmeExample.js:29) duration: 00:00:00.003
+2026-08-12 07:40:42.107+09:00 Leave func1 (ReadmeExample.js:19) duration: 00:00:00.003
+```
+
+以下は、debugtrace-jsのメソッドを使用したTypeScriptソースコードの例と、その実行時のログです。
+
+```JavaScript:ReadmeExample.ts
+// ReadmeExample.ts
+import debugtrace from '../debugtrace.js'
+
+class Contact {
+  constructor(
+    public id: number,
+    public firstName: string,
+    public lastName: string,
+    public birthday: Date
+  ) {}
+}
+
+func1()
+
+function func1(): void {
   debugtrace.enter() // TODO: Debug
-  debugtrace.printMessage('Hello, World!')
+  debugtrace.printMessage('Hello, World!') // TODO: Debug
   func2()
   debugtrace.leave() // TODO: Debug
 }
 
-func1()
+function func2(): void {
+  debugtrace.enter() // TODO: Debug
+  const contacts: Contact[] = [
+    new Contact(1, 'Akane', 'Apple', new Date(Date.UTC(1991, 2, 3))),
+    new Contact(2, 'Yukari', 'Apple', new Date(Date.UTC(1992, 3, 4)))
+  ]
+  debugtrace.print('contacts', contacts) // TODO: Debug
+  debugtrace.leave() // TODO: Debug
+}
 ```
 
-```log:debugtrace.log
-2025-02-11 15:49:38.591+09:00 debugtrace-js 2.2.0 on Node.js 22.13.1
-2025-02-11 15:49:38.617+09:00
-2025-02-11 15:49:38.618+09:00 Enter func1 (ReadmeExample.js:25)
-2025-02-11 15:49:38.618+09:00 | Hello, World! (ReadmeExample.js:26)
-2025-02-11 15:49:38.618+09:00 | Enter func2 (ReadmeExample.js:15)
-2025-02-11 15:49:38.620+09:00 | | contacts = [
-2025-02-11 15:49:38.620+09:00 | |   (Contact){
-2025-02-11 15:49:38.620+09:00 | |     id: 1, firstName: 'Akane', lastName: 'Apple',
-2025-02-11 15:49:38.620+09:00 | |     birthday: 1991-03-03 09:00:00.000+09:00
-2025-02-11 15:49:38.621+09:00 | |   },
-2025-02-11 15:49:38.621+09:00 | |   (Contact){
-2025-02-11 15:49:38.621+09:00 | |     id: 2, firstName: 'Yukari', lastName: 'Apple',
-2025-02-11 15:49:38.621+09:00 | |     birthday: 1992-04-04 09:00:00.000+09:00
-2025-02-11 15:49:38.622+09:00 | |   }
-2025-02-11 15:49:38.622+09:00 | | ] (ReadmeExample.js:20)
-2025-02-11 15:49:38.622+09:00 | Leave func2 (ReadmeExample.js:21) duration: 00:00:00.004
-2025-02-11 15:49:38.622+09:00 Leave func1 (ReadmeExample.js:28) duration: 00:00:00.004
+```log
+bun examples/ReadmeExample.ts
+2026-08-12 07:40:47.180+09:00 debugtrace-js 3.0.0 on Bun 1.3.14
+2026-08-12 07:40:47.180+09:00 
+2026-08-12 07:40:47.180+09:00 Enter func1 (ReadmeExample.ts:16)
+2026-08-12 07:40:47.180+09:00 | Hello, World! (ReadmeExample.ts:17)
+2026-08-12 07:40:47.180+09:00 | Enter func2 (ReadmeExample.ts:23)
+2026-08-12 07:40:47.183+09:00 | | contacts = [
+2026-08-12 07:40:47.183+09:00 | |   (Contact){
+2026-08-12 07:40:47.183+09:00 | |     id: 1, firstName: 'Akane', lastName: 'Apple',
+2026-08-12 07:40:47.183+09:00 | |     birthday: 1991-03-03 09:00:00.000+09:00
+2026-08-12 07:40:47.183+09:00 | |   },
+2026-08-12 07:40:47.183+09:00 | |   (Contact){
+2026-08-12 07:40:47.183+09:00 | |     id: 2, firstName: 'Yukari', lastName: 'Apple',
+2026-08-12 07:40:47.183+09:00 | |     birthday: 1992-04-04 09:00:00.000+09:00
+2026-08-12 07:40:47.183+09:00 | |   }
+2026-08-12 07:40:47.183+09:00 | | ] (ReadmeExample.ts:28)
+2026-08-12 07:40:47.183+09:00 | Leave func2 (ReadmeExample.ts:29) duration: 00:00:00.003
+2026-08-12 07:40:47.184+09:00 Leave func1 (ReadmeExample.ts:19) duration: 00:00:00.003
+```
+
+以下は、debugtrace-jsのメソッドを使用したHTMLと、その実行時のログです。
+
+```html
+<!-- ReadmeExample.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>HTML Example</title>
+    <script src="../debugtrace.js"></script>
+    <script>
+      class Contact {
+        constructor(id, firstName, lastName, birthday) {
+          this.id = id
+          this.firstName = firstName
+          this.lastName = lastName
+          this.birthday = birthday
+        }
+      }
+
+      function func1() {
+        debugtrace.enter()
+        debugtrace.printMessage('Hello, World!')
+        func2()
+        debugtrace.leave()
+      }
+
+      function func2() {
+        debugtrace.enter()
+        let contacts = [
+          new Contact(1, 'Akane' , 'Apple', new Date(Date.UTC(1991, 2, 3))),
+          new Contact(2, 'Yukari', 'Apple', new Date(Date.UTC(1992, 3, 4)))
+        ]
+        debugtrace.print('contacts', contacts)
+        debugtrace.leave()
+      }
+    </script>
+  </head>
+  <body>
+    <button onclick="func1()">Click me</button>
+  </body>
+</html>
+```
+
+```log
+2026-08-12 07:41:07.790+09:00 debugtrace-js 3.0.0 on Firefox 140.0
+2026-08-12 07:41:07.791+09:00
+2026-08-12 07:41:07.791+09:00 Enter func1 (ReadmeExample.html:20)
+2026-08-12 07:41:07.791+09:00 | Hello, World! (ReadmeExample.html:21)
+2026-08-12 07:41:07.791+09:00 | Enter func2 (ReadmeExample.html:27)
+2026-08-12 07:41:07.792+09:00 | | contacts = [
+2026-08-12 07:41:07.792+09:00 | |   (Contact){
+2026-08-12 07:41:07.792+09:00 | |     id: 1, firstName: 'Akane', lastName: 'Apple',
+2026-08-12 07:41:07.792+09:00 | |     birthday: 1991-03-03 09:00:00.000+09:00
+2026-08-12 07:41:07.792+09:00 | |   },
+2026-08-12 07:41:07.793+09:00 | |   (Contact){
+2026-08-12 07:41:07.793+09:00 | |     id: 2, firstName: 'Yukari', lastName: 'Apple',
+2026-08-12 07:41:07.793+09:00 | |     birthday: 1992-04-04 09:00:00.000+09:00
+2026-08-12 07:41:07.793+09:00 | |   }
+2026-08-12 07:41:07.793+09:00 | | ] (ReadmeExample.html:32)
+2026-08-12 07:41:07.793+09:00 | Leave func2 (ReadmeExample.html:33) duration: 00:00:00.002
+2026-08-12 07:41:07.793+09:00 Leave func1 (ReadmeExample.html:23) duration: 00:00:00.002
 ```
 
 ### 3. 関数一覧
@@ -379,44 +505,13 @@ debugtrace には以下のプロパティを指定できます。
   </tr>
 </table>
 
-### 5. ライセンス
+### 5. 変更履歴
+
+[変更履歴](CHANGELOG_ja.md)
+
+### 6. ライセンス
 
 [MIT ライセンス(MIT)](LICENSE.txt)
 
 _(C) 2015 Masato Kokubo_
-
-### 6. リリースノート
-
-#### debugtrace-js 2.2.0 - 2025/2/16
-
-* 以下のプロパティを削除しました。
-  * `debugtrace.minimumOutputLengthAndSize`
-  * `debugtrace.minimumOutputStringLength`
-
-* 以下のプロパティの初期値を変更しました。
-  |プロパティ名                  |初期値|旧初期値|
-  |:---------------------------|----:|------:|
-  |`debugtrace.collectionLimit`|  128|    512|
-  |`debugtrace.stringLimit`    |  256|   8192|
-
-* `print`関数に`printOptions`引数(省略可)を追加しました。
-
-#### debugtrace-js 2.1.2 - 2022/3/13
-
-* `print`, `printMessage`関数は引数値を返すようにしました。
-
-#### debugtrace-js 2.1.1 - 2021/10/9
-
-* 型名の出力時に例外がスローされる不具合を修正しました。
-* 起動時にNode.jsのバージョンを出力するようにしました。
-
-#### debugtrace-js 2.1.0 - 2021/8/9
-
-* 関数の出力の改善 (関数定義の最初の行のみ出力する)
-* `basicPrint`関数を追加しました。
-* データ出力の改行処理を改善しました。
-
-#### debugtrace-js 2.0.0 - 2020/8/2
-
-* Node.js 10以降に対応しました。
-* データ出力の改行処理を改善しました。
+*&copy; 2015 Masato Kokubo*

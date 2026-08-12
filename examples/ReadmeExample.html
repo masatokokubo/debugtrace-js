@@ -1,0 +1,40 @@
+<!-- ReadmeExample.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>HTML Example</title>
+    <script src="../debugtrace.js"></script>
+    <script>
+      class Contact {
+        constructor(id, firstName, lastName, birthday) {
+          this.id = id
+          this.firstName = firstName
+          this.lastName = lastName
+          this.birthday = birthday
+        }
+      }
+
+      function func1() {
+        debugtrace.enter()
+        debugtrace.printMessage('Hello, World!')
+        func2()
+        debugtrace.leave()
+      }
+
+      function func2() {
+        debugtrace.enter()
+        let contacts = [
+          new Contact(1, 'Akane' , 'Apple', new Date(Date.UTC(1991, 2, 3))),
+          new Contact(2, 'Yukari', 'Apple', new Date(Date.UTC(1992, 3, 4)))
+        ]
+        debugtrace.print('contacts', contacts)
+        debugtrace.leave()
+      }
+    </script>
+  </head>
+  <body>
+    <button onclick="func1()">Click me</button>
+  </body>
+</html>

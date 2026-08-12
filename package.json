@@ -1,8 +1,10 @@
 {
   "name": "debugtrace-js",
-  "version": "2.2.0",
-  "description": "debugtrace-js is a library that outputs trace logs when debugging JavaScript programs. It is available on Node.js 16 or later.",
+  "version": "3.0.0",
+  "description": "debugtrace-js is a library that outputs trace logs when debugging JavaScript programs; it can be used in Node.js, Bun, and Deno, as well as in browsers such as Chrome, Edge, Firefox, and Safari.",
+  "type": "commonjs",
   "main": "debugtrace.js",
+  "types": "debugtrace.d.ts",
   "scripts": {
     "test": "jest"
   },

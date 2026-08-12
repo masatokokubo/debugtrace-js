@@ -1,5 +1,5 @@
 // ES2021Example.js
-const debugtrace = require('../debugtrace.js') // TODO: Debug
+const debugtrace = require('../debugtrace.js')
 
 let a = null
 a ||= 1_234
