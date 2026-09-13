@@ -1,3 +1,8 @@
+### debugtrace-js 3.0.1 - 2026/9/13
+
+* ブラウザで出力されるファイル名、行番号が間違っているのを修正しました。
+* デフォルトの出力関数を`console.info`から`console.debug`に変更しました。
+
 ### debugtrace-js 3.0.0 - 2026/8/12
 
 * Bun, DenoおよびChrome, Edge, Firefox, Safariなどのブラウザで動作するようにしました。

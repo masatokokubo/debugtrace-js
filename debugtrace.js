@@ -96,7 +96,7 @@ const dataIndentStrings = []
 const enterTimes = []
 
 // version
-const version = '3.0.0'
+const version = '3.0.1'
 
 // Reflected object array
 let reflectedObjects = []
@@ -162,39 +162,41 @@ const downNest = () => {
  * @return a caller stack trace element
  */
 const getCallerInfo = () => {
-  const myModuleName = /debugtrace\.js$/
-
   const stack = new Error('').stack
-  const callerInfos = (typeof stack == 'string' ? stack.split('\n') : [])
-    .map(line => {
-      // V8/Node: "at functionName (file:line:column)"
-      // Firefox:  "functionName@file:line:column"
-      const v8Match = line.match(/^\s*at\s+(?:(.*?)\s+\()?(.+?):(\d+):(\d+)\)?\s*$/)
-      const firefoxMatch = line.match(/^(.*?)@(.+?):(\d+):(\d+)\s*$/)
-      const match = v8Match || firefoxMatch
-      if (!match)
-        return undefined
+  const lines = typeof stack == 'string' ? stack.split('\n') : []
+  let callerInfo
+  for (const line of lines) {
+    // V8/Node: "at functionName (file:line:column)"
+    // Firefox:  "functionName@file:line:column"
+    const v8Match = line.match(/^\s*at\s+(?:(.*?)\s+\()?(.+?):(\d+):(\d+)\)?\s*$/)
+    const browserMatch = line.match(/^(.*?)@(.+?):(\d+):(\d+)\s*$/)
+    const match = v8Match || browserMatch
+    if (!match)
+      continue
 
-      const functionName = match[1] || ''
-      let fileName = match[2]
-      let delimIndex = fileName.lastIndexOf('/')
+    const functionName = match[1] || ''
+    let fileName = match[2]
+    let delimIndex = fileName.lastIndexOf('/')
+    if (delimIndex >= 0) {
+      fileName = fileName.substring(delimIndex + 1)
+    } else {
+      delimIndex = fileName.lastIndexOf('\\')
       if (delimIndex >= 0)
         fileName = fileName.substring(delimIndex + 1)
-      else {
-        let delimIndex = fileName.lastIndexOf('\\')
-        if (delimIndex >= 0)
-          fileName = fileName.substring(delimIndex + 1)
-      }
-      return {
-        functionName : functionName,
-        fileName: fileName,
-        lineNumber: match[3],
-        columnNumber: match[4]
-      }
-    })
-    .filter(element => element && !myModuleName.test(element.fileName))
+    }
+    if (/^debugtrace(?:\.min)?\.js$/.test(fileName))
+      continue
 
-  return callerInfos[0] || {
+    callerInfo = {
+      functionName : functionName,
+      fileName: fileName,
+      lineNumber: match[3],
+      columnNumber: match[4]
+    }
+    break
+  }
+
+  return callerInfo || {
     functionName: '',
     fileName: '',
     lineNumber: '',
@@ -790,7 +792,7 @@ const debugtraceApi = (function() {
    * @since 2.1.0
    */
   debugtrace.basicPrint = (typeof console !== 'undefined' && console.log)
-    ? console.log.bind(console)
+    ? console.debug.bind(console)
     : () => {}
 
   /**

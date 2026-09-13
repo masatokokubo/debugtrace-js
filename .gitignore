@@ -2,3 +2,4 @@ out/
 *.bat
 node_modules
 coverage/
+examples/debugtrace.min.js

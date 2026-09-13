@@ -1,3 +1,8 @@
+### debugtrace-js 3.0.1 - Sep 13, 2026
+
+* Fixed incorrect file names and line numbers in the browser output.
+* Changed the default output function from `console.info` to `console.debug`. 
+
 ### debugtrace-js 3.0.0 - Aug 12, 2026
 
 * Made it compatible with Bun, Deno, and browsers such as Chrome, Edge, Firefox, and Safari.

@@ -1,5 +1,6 @@
 // ES2020Example.js
-const debugtrace = require('debugtrace-js')
+const debugtrace = require('debugtrace-js') // Use the package.
+//const debugtrace = require('../debugtrace.js') // Use the file.
 
 const bigInt1 = 100000001n
 debugtrace.print('bigInt1', bigInt1)

@@ -1,5 +1,6 @@
 // ES2021Example.js
-const debugtrace = require('debugtrace-js')
+const debugtrace = require('debugtrace-js') // Use the package.
+//const debugtrace = require('../debugtrace.js') // Use the file.
 
 let a = null
 a ||= 1_234

@@ -1,6 +1,7 @@
 "use strict";
 
-const debugtrace = require('debugtrace-js')
+//const debugtrace = require('debugtrace-js') // Use the package.
+const debugtrace = require('../debugtrace.js') // Use the file.
 
 function func1() {
   debugtrace.enter()

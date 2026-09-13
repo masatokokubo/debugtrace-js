@@ -1,0 +1,15 @@
+{
+  "name": "examples",
+  "version": "3.0.1",
+  "description": "Examples using debugtrace-js.",
+  "license": "MIT",
+  "author": "Masato Kokubo",
+  "type": "commonjs",
+  "main": "ReadmeExample.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "debugtrace-js": "^3.0.0"
+  }
+}

@@ -30,7 +30,8 @@ The following is an example of JavaScript source used debugtrace-js methods and 
 
 ```JavaScript:ReadmeExample.js
 // ReadmeExample.js
-const debugtrace = require('debugtrace-js') // TODO: Debug
+const debugtrace = require('debugtrace-js') // Use the package.
+//const debugtrace = require('../debugtrace.js') // Use the file.
 
 class Contact {
   constructor(id, firstName, lastName, birthday) {
@@ -63,30 +64,31 @@ function func2() {
 
 ```log
 node examples/ReadmeExample.js
-2026-08-12 07:40:42.091+09:00 debugtrace-js 3.0.0 on Node.js 22.23.1
-2026-08-12 07:40:42.104+09:00 
-2026-08-12 07:40:42.104+09:00 Enter func1 (ReadmeExample.js:16)
-2026-08-12 07:40:42.104+09:00 | Hello, World! (ReadmeExample.js:17)
-2026-08-12 07:40:42.104+09:00 | Enter func2 (ReadmeExample.js:23)
-2026-08-12 07:40:42.106+09:00 | | contacts = [
-2026-08-12 07:40:42.106+09:00 | |   (Contact){
-2026-08-12 07:40:42.106+09:00 | |     id: 1, firstName: 'Akane', lastName: 'Apple',
-2026-08-12 07:40:42.106+09:00 | |     birthday: 1991-03-03 09:00:00.000+09:00
-2026-08-12 07:40:42.106+09:00 | |   },
-2026-08-12 07:40:42.106+09:00 | |   (Contact){
-2026-08-12 07:40:42.106+09:00 | |     id: 2, firstName: 'Yukari', lastName: 'Apple',
-2026-08-12 07:40:42.106+09:00 | |     birthday: 1992-04-04 09:00:00.000+09:00
-2026-08-12 07:40:42.107+09:00 | |   }
-2026-08-12 07:40:42.107+09:00 | | ] (ReadmeExample.js:28)
-2026-08-12 07:40:42.107+09:00 | Leave func2 (ReadmeExample.js:29) duration: 00:00:00.003
-2026-08-12 07:40:42.107+09:00 Leave func1 (ReadmeExample.js:19) duration: 00:00:00.003
+2026-09-13 09:27:50.816+09:00 debugtrace-js 3.0.1 on Node.js 26.7.0
+2026-09-13 09:27:50.822+09:00 
+2026-09-13 09:27:50.822+09:00 Enter func1 (ReadmeExample.js:17)
+2026-09-13 09:27:50.823+09:00 | Hello, World! (ReadmeExample.js:18)
+2026-09-13 09:27:50.823+09:00 | Enter func2 (ReadmeExample.js:24)
+2026-09-13 09:27:50.824+09:00 | | contacts = [
+2026-09-13 09:27:50.824+09:00 | |   (Contact){
+2026-09-13 09:27:50.824+09:00 | |     id: 1, firstName: 'Akane', lastName: 'Apple',
+2026-09-13 09:27:50.824+09:00 | |     birthday: 1991-03-03 09:00:00.000+09:00
+2026-09-13 09:27:50.824+09:00 | |   },
+2026-09-13 09:27:50.824+09:00 | |   (Contact){
+2026-09-13 09:27:50.824+09:00 | |     id: 2, firstName: 'Yukari', lastName: 'Apple',
+2026-09-13 09:27:50.825+09:00 | |     birthday: 1992-04-04 09:00:00.000+09:00
+2026-09-13 09:27:50.825+09:00 | |   }
+2026-09-13 09:27:50.825+09:00 | | ] (ReadmeExample.js:29)
+2026-09-13 09:27:50.825+09:00 | Leave func2 (ReadmeExample.js:30) duration: 00:00:00.002
+2026-09-13 09:27:50.825+09:00 Leave func1 (ReadmeExample.js:20) duration: 00:00:00.003
 ```
 
 The following is an example of TyprScript source used debugtrace-js methods and the log of when it has been executed.
 
 ```JavaScript:ReadmeExample.ts
 // ReadmeExample.ts
-import debugtrace from 'debugtrace-js'
+import debugtrace from 'debugtrace-js' // Use the package.
+//import debugtrace from '../debugtrace.js' // Use the file.
 
 class Contact {
   constructor(
@@ -119,36 +121,44 @@ function func2(): void {
 
 ```log
 bun examples/ReadmeExample.ts
-2026-08-12 07:40:47.180+09:00 debugtrace-js 3.0.0 on Bun 1.3.14
-2026-08-12 07:40:47.180+09:00 
-2026-08-12 07:40:47.180+09:00 Enter func1 (ReadmeExample.ts:16)
-2026-08-12 07:40:47.180+09:00 | Hello, World! (ReadmeExample.ts:17)
-2026-08-12 07:40:47.180+09:00 | Enter func2 (ReadmeExample.ts:23)
-2026-08-12 07:40:47.183+09:00 | | contacts = [
-2026-08-12 07:40:47.183+09:00 | |   (Contact){
-2026-08-12 07:40:47.183+09:00 | |     id: 1, firstName: 'Akane', lastName: 'Apple',
-2026-08-12 07:40:47.183+09:00 | |     birthday: 1991-03-03 09:00:00.000+09:00
-2026-08-12 07:40:47.183+09:00 | |   },
-2026-08-12 07:40:47.183+09:00 | |   (Contact){
-2026-08-12 07:40:47.183+09:00 | |     id: 2, firstName: 'Yukari', lastName: 'Apple',
-2026-08-12 07:40:47.183+09:00 | |     birthday: 1992-04-04 09:00:00.000+09:00
-2026-08-12 07:40:47.183+09:00 | |   }
-2026-08-12 07:40:47.183+09:00 | | ] (ReadmeExample.ts:28)
-2026-08-12 07:40:47.183+09:00 | Leave func2 (ReadmeExample.ts:29) duration: 00:00:00.003
-2026-08-12 07:40:47.184+09:00 Leave func1 (ReadmeExample.ts:19) duration: 00:00:00.003
+2026-09-13 09:28:43.011+09:00 debugtrace-js 3.0.1 on Bun 1.3.14
+2026-09-13 09:28:43.012+09:00 
+2026-09-13 09:28:43.012+09:00 Enter func1 (ReadmeExample.ts:17)
+2026-09-13 09:28:43.012+09:00 | Hello, World! (ReadmeExample.ts:18)
+2026-09-13 09:28:43.012+09:00 | Enter func2 (ReadmeExample.ts:24)
+2026-09-13 09:28:43.015+09:00 | | contacts = [
+2026-09-13 09:28:43.015+09:00 | |   (Contact){
+2026-09-13 09:28:43.015+09:00 | |     id: 1, firstName: 'Akane', lastName: 'Apple',
+2026-09-13 09:28:43.015+09:00 | |     birthday: 1991-03-03 09:00:00.000+09:00
+2026-09-13 09:28:43.015+09:00 | |   },
+2026-09-13 09:28:43.015+09:00 | |   (Contact){
+2026-09-13 09:28:43.015+09:00 | |     id: 2, firstName: 'Yukari', lastName: 'Apple',
+2026-09-13 09:28:43.015+09:00 | |     birthday: 1992-04-04 09:00:00.000+09:00
+2026-09-13 09:28:43.015+09:00 | |   }
+2026-09-13 09:28:43.015+09:00 | | ] (ReadmeExample.ts:29)
+2026-09-13 09:28:43.018+09:00 | Leave func2 (ReadmeExample.ts:30) duration: 00:00:00.004
+2026-09-13 09:28:43.018+09:00 Leave func1 (ReadmeExample.ts:20) duration: 00:00:00.006
 ```
 
 The following is an HTML used debugtrace-js methods and the log of when it has been executed.
 
 ```html
 <!-- ReadmeExample.html -->
+<!--
+  cd <The directory containing this file>
+  python -m http.server 8000
+  Open "http://localhost:8000/ReadmeExample.html" in the browser
+  and open the Developer Tools (press the F12 key).
+  Click the "click me" button shown.
+-->
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>HTML Example</title>
-    <script src="https://cdn.jsdelivr.net/npm/debugtrace-js@3.0.0/debugtrace.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/debugtrace-js@3.0.1/debugtrace.min.js"></script>
+    <!-- <script src="debugtrace.min.js"></script> -->
     <script>
       class Contact {
         constructor(id, firstName, lastName, birthday) {
@@ -184,23 +194,24 @@ The following is an HTML used debugtrace-js methods and the log of when it has b
 ```
 
 ```log
-2026-08-12 07:41:07.790+09:00 debugtrace-js 3.0.0 on Firefox 140.0
-2026-08-12 07:41:07.791+09:00
-2026-08-12 07:41:07.791+09:00 Enter func1 (ReadmeExample.html:20)
-2026-08-12 07:41:07.791+09:00 | Hello, World! (ReadmeExample.html:21)
-2026-08-12 07:41:07.791+09:00 | Enter func2 (ReadmeExample.html:27)
-2026-08-12 07:41:07.792+09:00 | | contacts = [
-2026-08-12 07:41:07.792+09:00 | |   (Contact){
-2026-08-12 07:41:07.792+09:00 | |     id: 1, firstName: 'Akane', lastName: 'Apple',
-2026-08-12 07:41:07.792+09:00 | |     birthday: 1991-03-03 09:00:00.000+09:00
-2026-08-12 07:41:07.792+09:00 | |   },
-2026-08-12 07:41:07.793+09:00 | |   (Contact){
-2026-08-12 07:41:07.793+09:00 | |     id: 2, firstName: 'Yukari', lastName: 'Apple',
-2026-08-12 07:41:07.793+09:00 | |     birthday: 1992-04-04 09:00:00.000+09:00
-2026-08-12 07:41:07.793+09:00 | |   }
-2026-08-12 07:41:07.793+09:00 | | ] (ReadmeExample.html:32)
-2026-08-12 07:41:07.793+09:00 | Leave func2 (ReadmeExample.html:33) duration: 00:00:00.002
-2026-08-12 07:41:07.793+09:00 Leave func1 (ReadmeExample.html:23) duration: 00:00:00.002
+2026-09-13 13:48:41.374+09:00 debugtrace-js 3.0.1 on Firefox 140.0
+2026-09-13 13:48:41.375+09:00
+2026-09-13 13:48:41.375+09:00 Enter func1 (ReadmeExample.html:28)
+2026-09-13 13:48:41.376+09:00 | Hello, World! (ReadmeExample.html:29)
+2026-09-13 13:48:41.377+09:00 | Enter func2 (ReadmeExample.html:35)
+2026-09-13 13:48:41.379+09:00 | | contacts = [
+2026-09-13 13:48:41.379+09:00 | |   (Contact){
+2026-09-13 13:48:41.379+09:00 | |     id: 1, firstName: 'Akane', lastName: 'Apple',
+2026-09-13 13:48:41.379+09:00 | |     birthday: 1991-03-03 09:00:00.000+09:00
+2026-09-13 13:48:41.379+09:00 | |   },
+2026-09-13 13:48:41.379+09:00 | |   (Contact){
+2026-09-13 13:48:41.379+09:00 | |     id: 2, firstName: 'Yukari', lastName: 'Apple',
+2026-09-13 13:48:41.379+09:00 | |     birthday: 1992-04-04 09:00:00.000+09:00
+2026-09-13 13:48:41.379+09:00 | |   }
+2026-09-13 13:48:41.379+09:00 | | ] (ReadmeExample.html:40)
+2026-09-13 13:48:41.380+09:00 | Leave func2 (ReadmeExample.html:41) duration: 00:00:00.002
+2026-09-13 13:48:41.381+09:00 Leave func1 (ReadmeExample.html:31) duration: 00:00:00.005
+
 ```
 
 ### 3. Function List
@@ -474,11 +485,11 @@ The following properties can be specified for on debugtrace-js.
       The basic print function<br>
       <span style="font-size:small;font-weight:bold">Example (Initial setting):</span>
       <code>
-    debugtrace.basicPrint = console.log</code>
+    debugtrace.basicPrint = console.debug.bind(console)</code>
       <br>
-      <span style="font-size:small;font-weight:bold">Example (Output to stderr):</span>
+      <span style="font-size:small;font-weight:bold">Example:</span>
       <code>
-    debugtrace.basicPrint = console.error</code>
+    debugtrace.basicPrint = console.log.bind(console)</code>
   </tr>
 </table>
 
@@ -488,6 +499,6 @@ The following properties can be specified for on debugtrace-js.
 
 ### 6. License
 
-[MIT ライセンス(MIT)](LICENSE.txt)
+[MIT License(MIT)](LICENSE.txt)
 
 *&copy; 2015 Masato Kokubo*

@@ -1,11 +1,19 @@
 <!-- ReadmeExample.html -->
+<!--
+  cd <The directory containing this file>
+  python -m http.server 8000
+  Open "http://localhost:8000/ReadmeExample.html" in the browser
+  and open the Developer Tools (press the F12 key).
+  Click the "click me" button shown.
+-->
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>HTML Example</title>
-    <script src="https://cdn.jsdelivr.net/npm/debugtrace-js@3.0.0/debugtrace.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/debugtrace-js@3.0.1/debugtrace.min.js"></script>
+    <!-- <script src="debugtrace.min.js"></script> -->
     <script>
       class Contact {
         constructor(id, firstName, lastName, birthday) {

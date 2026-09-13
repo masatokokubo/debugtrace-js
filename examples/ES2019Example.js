@@ -1,5 +1,6 @@
 // ES2019Example.js
-const debugtrace = require('debugtrace-js')
+const debugtrace = require('debugtrace-js') // Use the package.
+//const debugtrace = require('../debugtrace.js') // Use the file.
 
 const str = '   AAA   BBB   '
 

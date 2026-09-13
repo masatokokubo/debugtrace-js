@@ -1,5 +1,6 @@
 // ReadmeExample.js
-const debugtrace = require('debugtrace-js') // TODO: Debug
+const debugtrace = require('debugtrace-js') // Use the package.
+//const debugtrace = require('../debugtrace.js') // Use the file.
 
 class Contact {
   constructor(id, firstName, lastName, birthday) {

@@ -1,5 +1,6 @@
 // ReadmeExample.ts
-import debugtrace from 'debugtrace-js'
+import debugtrace from 'debugtrace-js' // Use the package.
+//import debugtrace from '../debugtrace.js' // Use the file.
 
 class Contact {
   constructor(
